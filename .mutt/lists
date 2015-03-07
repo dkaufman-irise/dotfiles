@@ -1,0 +1,8 @@
+# $Id$
+#
+########## Mailing Lists ##########
+subscribe list1@example.com
+subscribe list2@example.com
+########## End Mailing Lists ##########
+
+# vim: filetype=muttrc

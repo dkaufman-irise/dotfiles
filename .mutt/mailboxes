@@ -1,0 +1,30 @@
+# $Id$
+#
+########## Mailboxes ##########
+#
+## set spoolfile
+set spoolfile=~/mail/inbox
+
+# set folder
+set folder=~/mail
+# set drafts (postponed) folder
+set postponed=~/mail/Drafts
+#
+# set certificate file
+#set certificate_file=~/.mutt_certs
+#
+# set up server-side mailboxes to check
+mailboxes =
+mailboxes =spam
+#
+# Set Default mailbox for old mail
+set mbox=~/mail/archive/inbox
+# don't ask for permission to move read email to default mbox
+set move=no
+
+# fixes filesystem-mounted-noatime issue
+set check_mbox_size = yes
+# 
+#
+########## End Mailboxes ##########
+# vim: filetype=muttrc

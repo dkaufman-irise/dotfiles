@@ -1,0 +1,24 @@
+# BSD style ls
+unalias ls; alias ls='ls -G -h'
+# shows only directories, in alphabetical order
+alias lsd='ls -alFG | grep \/ | sort'
+# fix lscolors
+unset LS_COLORS; unset LSCOLORS; export CLICOLOR=1; export LSCOLORS='exgxfxfxcxdxdxhbadbxbx'
+
+# MacPorts Installer addition on 2011-09-03_at_20:34:56: adding an appropriate PATH variable for use with MacPorts.
+export PATH=/opt/local/bin:/opt/local/sbin:$PATH
+# Finished adapting your PATH environment variable for use with MacPorts.
+
+if [ -f /opt/local/etc/bash_completion ]; then
+	. /opt/local/etc/bash_completion
+fi
+
+alias shred='gshred'
+alias vimwrite="mvim -U ~/.gvimrc.writing"
+
+# MIT Kerberos tools in /opt/local/bin do not integrate with the default OSX kerberos tools (heimdal). Since we're gettting a TGT at login, we want to use OSX's tools.
+[ -e /usr/bin/klist ] && alias klist='/usr/bin/klist'
+[ -e /usr/bin/kinit ] && alias kinit='/usr/bin/kinit'
+[ -e /usr/bin/kdestroy ] && alias kdestroy='/usr/bin/kdestroy'
+
+tabs -4

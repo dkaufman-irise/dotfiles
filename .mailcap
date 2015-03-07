@@ -1,0 +1,55 @@
+application/x-debian-package; /usr/lib/mime/debian-view '%s'; needsterminal; description=Debian GNU/Linux Package; nametemplate=%s.deb
+application/x-gtar; /bin/tar tvzf -; print=/bin/tar tvzf - | print text/plain:-; copiousoutput
+application/x-tar; /bin/tar tvf -; print=/bin/tar tvf - | print text/plain:-; copiousoutput
+application/x-troff-man; /usr/bin/nroff -mandoc -Tlatin1; copiousoutput; print=/usr/bin/nroff -mandoc -Tlatin1 | print text/plain:-
+audio/basic; /usr/lib/mime/playaudio '%s'; description=Basic uLaw Audio; nametemplate=%s.au
+image/avs; display -display $DISPLAY -font '-*-terminus-medium-r-*-*-14-*-*-*-*-*-iso8859-1'; test=test -n "$DISPLAY"
+image/bie; display -display $DISPLAY -font '-*-terminus-medium-r-*-*-14-*-*-*-*-*-iso8859-1'; test=test -n "$DISPLAY"
+image/cmyk; display -display $DISPLAY -font '-*-terminus-medium-r-*-*-14-*-*-*-*-*-iso8859-1'; test=test -n "$DISPLAY"
+image/dcx; display -display $DISPLAY -font '-*-terminus-medium-r-*-*-14-*-*-*-*-*-iso8859-1'; test=test -n "$DISPLAY"
+image/eps; display -display $DISPLAY -font '-*-terminus-medium-r-*-*-14-*-*-*-*-*-iso8859-1'; test=test -n "$DISPLAY"
+image/fax; display -display $DISPLAY -font '-*-terminus-medium-r-*-*-14-*-*-*-*-*-iso8859-1'; test=test -n "$DISPLAY"
+image/fits; display -display $DISPLAY -font '-*-terminus-medium-r-*-*-14-*-*-*-*-*-iso8859-1'; test=test -n "$DISPLAY"
+image/gif; display -display $DISPLAY -font '-*-terminus-medium-r-*-*-14-*-*-*-*-*-iso8859-1'; test=test -n "$DISPLAY"
+image/gradation; display -display $DISPLAY -font '-*-terminus-medium-r-*-*-14-*-*-*-*-*-iso8859-1'; test=test -n "$DISPLAY"
+image/gray; display -display $DISPLAY -font '-*-terminus-medium-r-*-*-14-*-*-*-*-*-iso8859-1'; test=test -n "$DISPLAY"
+image/hdf; display -display $DISPLAY -font '-*-terminus-medium-r-*-*-14-*-*-*-*-*-iso8859-1'; test=test -n "$DISPLAY"
+image/jpeg; display -display $DISPLAY -font '-*-terminus-medium-r-*-*-14-*-*-*-*-*-iso8859-1'; test=test -n "$DISPLAY"
+image/jpg; display -display $display -display $DISPLAY -font '-*-terminus-medium-r-*-*-14-*-*-*-*-*-iso8859-1'; test=test -n "$DISPLAY"
+image/map; display -display $DISPLAY -font '-*-terminus-medium-r-*-*-14-*-*-*-*-*-iso8859-1'; test=test -n "$DISPLAY"
+image/miff; display -display $DISPLAY -font '-*-terminus-medium-r-*-*-14-*-*-*-*-*-iso8859-1'; test=test -n "$DISPLAY"
+image/mono; display -display $DISPLAY -font '-*-terminus-medium-r-*-*-14-*-*-*-*-*-iso8859-1'; test=test -n "$DISPLAY"
+image/mtv; display -display $DISPLAY -font '-*-terminus-medium-r-*-*-14-*-*-*-*-*-iso8859-1'; test=test -n "$DISPLAY"
+image/pcd; display -display $DISPLAY -font '-*-terminus-medium-r-*-*-14-*-*-*-*-*-iso8859-1'; test=test -n "$DISPLAY"
+image/pcx; display -display $DISPLAY -font '-*-terminus-medium-r-*-*-14-*-*-*-*-*-iso8859-1'; test=test -n "$DISPLAY"
+image/pdf; display -display $DISPLAY -font '-*-terminus-medium-r-*-*-14-*-*-*-*-*-iso8859-1'; test=test -n "$DISPLAY"
+image/pict; display -display $DISPLAY -font '-*-terminus-medium-r-*-*-14-*-*-*-*-*-iso8859-1'; test=test -n "$DISPLAY"
+image/pjpeg; display -display $DISPLAY -font '-*-terminus-medium-r-*-*-14-*-*-*-*-*-iso8859-1'; test=test -n "$DISPLAY"
+image/png; display -display $DISPLAY -font '-*-terminus-medium-r-*-*-14-*-*-*-*-*-iso8859-1'; test=test -n "$DISPLAY"
+image/ps; display -display $DISPLAY -font '-*-terminus-medium-r-*-*-14-*-*-*-*-*-iso8859-1'; test=test -n "$DISPLAY"
+image/rad; display -display $DISPLAY -font '-*-terminus-medium-r-*-*-14-*-*-*-*-*-iso8859-1'; test=test -n "$DISPLAY"
+image/rgba; display -display $DISPLAY -font '-*-terminus-medium-r-*-*-14-*-*-*-*-*-iso8859-1'; test=test -n "$DISPLAY"
+image/rla; display -display $DISPLAY -font '-*-terminus-medium-r-*-*-14-*-*-*-*-*-iso8859-1'; test=test -n "$DISPLAY"
+image/rle; display -display $DISPLAY -font '-*-terminus-medium-r-*-*-14-*-*-*-*-*-iso8859-1'; test=test -n "$DISPLAY"
+image/sgi; display -display $DISPLAY -font '-*-terminus-medium-r-*-*-14-*-*-*-*-*-iso8859-1'; test=test -n "$DISPLAY"
+image/sun-raster; display -display $DISPLAY -font '-*-terminus-medium-r-*-*-14-*-*-*-*-*-iso8859-1'; test=test -n "$DISPLAY"
+image/targa; display -display $DISPLAY -font '-*-terminus-medium-r-*-*-14-*-*-*-*-*-iso8859-1'; test=test -n "$DISPLAY"
+image/tiff; display -display $DISPLAY -font '-*-terminus-medium-r-*-*-14-*-*-*-*-*-iso8859-1'; test=test -n "$DISPLAY"
+image/uyvu; display -display $DISPLAY -font '-*-terminus-medium-r-*-*-14-*-*-*-*-*-iso8859-1'; test=test -n "$DISPLAY"
+image/vid; display -display $DISPLAY -font '-*-terminus-medium-r-*-*-14-*-*-*-*-*-iso8859-1'; test=test -n "$DISPLAY"
+image/viff; display -display $DISPLAY -font '-*-terminus-medium-r-*-*-14-*-*-*-*-*-iso8859-1'; test=test -n "$DISPLAY"
+image/x-ms-bmp; display -display $DISPLAY -font '-*-terminus-medium-r-*-*-14-*-*-*-*-*-iso8859-1'; test=test -n "$DISPLAY"
+image/x-portable-anymap; display -display $DISPLAY -font '-*-terminus-medium-r-*-*-14-*-*-*-*-*-iso8859-1'; test=test -n "$DISPLAY"
+image/x-portable-bitmap; display -display $DISPLAY -font '-*-terminus-medium-r-*-*-14-*-*-*-*-*-iso8859-1'; test=test -n "$DISPLAY"
+image/x-portable-graymap; display -display $DISPLAY -font '-*-terminus-medium-r-*-*-14-*-*-*-*-*-iso8859-1'; test=test -n "$DISPLAY"
+image/x-portable-pixmap; display -display $DISPLAY -font '-*-terminus-medium-r-*-*-14-*-*-*-*-*-iso8859-1'; test=test -n "$DISPLAY"
+image/x-rgb; display -display $DISPLAY -font '-*-terminus-medium-r-*-*-14-*-*-*-*-*-iso8859-1'; test=test -n "$DISPLAY"
+image/x-xbitmap; display -display $DISPLAY -font '-*-terminus-medium-r-*-*-14-*-*-*-*-*-iso8859-1'; test=test -n "$DISPLAY"
+image/x-xpixmap; display -display $DISPLAY -font '-*-terminus-medium-r-*-*-14-*-*-*-*-*-iso8859-1'; test=test -n "$DISPLAY"
+image/x-xwindowdump; display -display $DISPLAY -font '-*-terminus-medium-r-*-*-14-*-*-*-*-*-iso8859-1'; test=test -n "$DISPLAY"
+image/yuv; display -display $DISPLAY -font '-*-terminus-medium-r-*-*-14-*-*-*-*-*-iso8859-1'; test=test -n "$DISPLAY"
+text/html; /usr/bin/elinks -force-html '%s'; needsterminal; description=HTML Text; nametemplate=%s.html; copiousoutput
+text/plain; less.sh '%s'; needsterminal
+text/plain; view '%s'; edit=vim '%s'; compose=vim '%s'; needsterminal
+text/*; less.sh '%s'; needsterminal
+text/*; view '%s'; edit=vim '%s'; compose=vim '%s'; needsterminal

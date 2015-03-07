@@ -1,0 +1,4 @@
+# $Id$
+# alias form is    alias name Full Name <email@address>
+alias example <spam@example.com>
+# vim: filetype=muttrc

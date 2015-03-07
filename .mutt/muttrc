@@ -1,0 +1,188 @@
+# $Id$
+#
+# source files
+# mailboxes
+source ~/.mutt/mailboxes.sh|
+# source 256 color config in terms that support it, otherwise we'll just source the bare colors file
+source ~/.mutt/colors.sh|
+# keybindings
+source ~/.mutt/keybindings
+# lists
+source ~/.mutt/lists
+# gpg integrations
+source ~/.mutt/gpg
+# aliases
+source ~/.mutt/aliases
+# hooks
+source ~/.mutt/hooks
+# GPG Settings
+source ~/.mutt/gpg
+# header settings (ignore, display order...)
+source ~/.mutt/headers
+# source hostname-specific tweaks. this is kind of a hack, but it works.
+source ~/.mutt/muttrc-`hostname -s`
+
+########## Mail check settings ##########
+#
+# how often to poll for new mail in mailboxes (every X seconds)
+set mail_check=15
+
+# how often to issue new mail alert (ever X seconds)
+set timeout=15
+#
+########## End Mail check settings ##########
+
+########## Message Composition ##########
+#
+# editor
+#set editor="vim -c 'set ft=mail'"
+#set visual="vim -c 'set ft=mail'"
+
+set editor="vim -c 'set ft=mail fo=tcrq tw=72 encoding=utf-8'"
+set visual="vim -c 'set ft=mail fo=tcrq tw=72 encoding=utf-8'"
+
+
+# ask about carbon copies
+#set askcc
+
+# real name
+set realname="Your NameHere"
+
+# not sure what this is, but it seems popular to turn it off
+unset confirmappend
+
+# spell checking
+set ispell="aspell -e -c"
+
+# set alias file
+set alias_file="~/.mutt/aliases"
+
+# Address Book (abook) integration
+#set query_command="abook --mutt-query '%s'"
+#
+
+# ask about carbon copies
+#set askcc
+
+#
+########## End Message Composition ##########
+
+########## Message Display ##########
+# index format - controls how messages look in the index view
+#set index_format="%4C  %[%H:%M %b %d]  [%4c] %2S  %-20.20F [%2e]  %-40s %> [%2M]"
+set index_format="%4C  %[%H:%M %b %d %Y]  [%4c] %2S  %-18.18F [%2e]  %-37s %> [%2M]"
+
+# Status bar up top, please.
+#set status_on_top
+# sorting
+
+# mini index - put's an index above the body of the message (ala thunderbird, outlook express, etc...)
+set pager_index_lines = 10
+
+# don't go to the next message if down arrow is hit in pager at end of message
+set pager_stop=yes
+
+# format of the status line when reading a message
+set pager_format="%2S  From: %-25.25n Subject: %-40.100s %> Viewing %P of %2l lines"
+
+# sorting
+set sort=threads
+
+# show threads/messages with newest message last.
+set sort_aux=last-date-received
+
+# thread properly, using all available info
+set strict_threads
+
+# set narrow threads to better display the mailing list, where people can't seem to do anything BUT reply
+set narrow_tree
+
+# enable threading by recognition of Re; in subject
+set reply_regexp="^((re):[ \t]*)*"
+
+# do not use ascii chars to display threads
+unset ascii_chars
+
+# do not use 8bit ascci when composing
+set noallow_8bit
+
+# do not collapse a thread containing unread mail
+unset collapse_unread
+
+# do (not) jump to next unread message when current thread is uncollapsed
+set uncollapse_jump
+
+# put vi-like ~ at the end of messages
+set tilde
+
+# no help line at the top of the screen
+set nohelp
+
+# make long messages play nice
+set smart_wrap
+set wrapmargin=10
+unset markers
+
+# let's view html sanitized
+auto_view text/html
+
+# makes multipart messages more intelligible
+alternative_order text/plain text/enriched text/html text/*
+
+# Just because I don't read it before exiting doesn't mean it is no longer new
+unset mark_old
+
+# determines quote levels.    default: "^([ \t]*[|>:}#])+"
+# I don't think this is perfect but it seems to at least work.
+set quote_regexp="^([ \t]*(> *]))+|^([ \t]*[|>:}#])+"
+
+# display alias, if one exists
+set reverse_alias
+
+# sidebar functionality (unofficial patch, see http://www.lunar-linux.org/index.php?option=com_content&task=view&id=44
+set sidebar_width=30
+set sidebar_visible=yes
+set sidebar_format="%B %* %?N?+%N/?%?F?{%F}/?%?S?[%S]?"
+set sidebar_shortpath=yes
+set sidebar_delim='┃'
+set sidebar_folderindent=yes
+set sidebar_indentstr="└"
+
+# turn of beep-on-error, turn on beep on new mamil
+unset beep
+set beep_new
+
+# pretty informative status bar
+#
+# %r mailbox altered; %P percentage of the way down the list of messages;
+# %f filename; %?l?%l? size; (%?n?%n\/?%m) new/total no. of messages;
+# %?d? Del:%d? no. of deleted messages; %?F? Flag:%F? no. of flagged messages
+# %?t? Tag:%t? no. of tagged messages; %?p? Post:%p? no. of postponed messages
+# %>- right-align the following and pad the line with ---
+# (%s/%S) sort order; %?b?- %b folders? no. of folders containing new mail
+#
+set status_format="%r %P of %f %?l?%l? [%?n?+%n\/?%m]%?d? Del:%d?%?F? Flag:%F?%?t? Tag:%t?%?p? Post:%p? %>━ (%s/%S) %?b?- %b folders?"
+
+# index display - characters to differentiate destination of message
+set to_chars="ZTGCF"
+
+# Set up filtering through t-prot for removal of TOFU
+set display_filter='t-prot --bigq=10,1 -celkmtwS --ms-smart -Mmutt --spass -L$HOME/.mutt/mlfooters'
+#
+########## End Message Display ##########
+
+########## message management ##########
+# stop asking me about deletion.  if i blow something away, my bad.
+set delete=yes
+
+# search
+set thorough_search
+
+set date_format="!%T %d %a %b %Y %Z"
+# Ugh! Hardcopy...
+#set print_cmd="a2ps -nn -ns -H  -p -1 -B -F10 -nL | lpr"
+#set print_cmd="a2ps -1gEmail | lpr"
+#set print_cmd="enscript -Email -2 -r -G"
+#
+########## End Message Management ##########
+# vim: filetype=muttrc
