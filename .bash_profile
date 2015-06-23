@@ -4,13 +4,118 @@
 # This file is read each time a login shell is started.
 # It holds all aliases, functions, shopts, and environment variables, as well as setting a colorful prompt.
 #
-#
-##### Command Aliases / Functions #####
+# do nothing if not an interactive shell
+[ -z "$PS1" ] && return
 
-# Shell Interaction Aliases  - stuff that makes dealing with the shell easier
+# remove any current prompt settings
+unset PROMPT_COMMAND
+
+##### Color Definitions (commands to set text colors) #####
+ResetColours="$(tput sgr0)"
+
+Black="$(tput setaf 0)"
+DarkGrey="$(tput bold ; tput setaf 0)"
+
+BlackBG="$(tput setab 0)"
+BrightBlackBG="$(tput bold; tput setab 0)"
+
+Red="$(tput setaf 1)"
+LightRed="$(tput bold ; tput setaf 1)"
+
+RedBG="$(tput setab 1)"
+LightRedBG="$(tput bold; tput setab 1)"
+
+Green="$(tput setaf 2)"
+LightGreen="$(tput bold ; tput setaf 2)"
+
+GreenBG="$(tput setab 2)"
+LightGreenBG="$(tput bold; tput setab 2)"
+
+Brown="$(tput setaf 3)"
+Yellow="$(tput bold ; tput setaf 3)"
+
+BrownBG="$(tput setab 3)"
+YellowBG="$(tput bold; tput setab 3)"
+
+Blue="$(tput setaf 4)"
+BrightBlue="$(tput bold ; tput setaf 4)"
+
+BlueBG="$(tput setab 4)"
+BrightBlueBG="$(tput bold; tput setab 4)"
+
+Purple="$(tput setaf 5)"
+PurpleBG="$(tput setab 5)"
+
+Pink="$(tput bold ; tput setaf 5)"
+PinkBG="$(tput bold ; tput setab 5)"
+
+Cyan="$(tput setaf 6)"
+BrightCyan="$(tput bold ; tput setaf 6)"
+
+CyanBG="$(tput setab 6)"
+BrightCyanBG="$(tput bold ; tput setab 6)"
+
+LightGrey="$(tput setaf 7)"
+White="$(tput bold ; tput setaf 7)"
+
+LightGreyBG="$(tput setab 7)"
+WhiteBG="$(tput bold ; tput setab 7)"
+
+##### Set User Chosen Colours Here #####
+
+# brackets, parentheses, separators
+UC1="${DarkGrey}"
+
+# color of current working directory
+UC2="${Blue}"
+
+# prompt timestamp color
+UC3="${LightGrey}"
+
+# hostname color
+UC4="${Purple}"
+
+# display username in this colour
+UNC="${Green}"
+
+# display prompt in this color
+PromptColor="${DarkGrey}"
+
+# Warning colour for low load
+WC1="${Green}"
+
+# Medium Load
+WC2="${Yellow}"
+
+# High Load
+WC3="${Red}"
+##### End of Color Definitions #####
+
+
+##### Shell Options #####
+#correct spelling errors in cd pathnames
+shopt -s cdspell
+#multi-line commands appended to history as single-line, for ease of editing
+shopt -s cmdhist
+#extended file-globbing
+shopt -s extglob
+#appends history entries rather than overwriting them.
+shopt -s histappend
+# includes dotfiles in tab-completion
+shopt -s dotglob
+# always update windowsize after each command
+shopt -s checkwinsize
+# if a bare directory is typed as a command, cd to it instead
+shopt -s autocd
+# ls -F style markers for tab-completed items
+set visible-stats on
+##### End of Shell-Specific Options #####
+#
+#
+#####  Aliases #####
 
 # shows only directories, in alphabetical order
-	alias lsd='ls | grep \/ | sort'
+	alias lsd='ls -alF --color | grep \/ | sort'
 
 # always list in color, tagged for type, human readable sizes
 	alias ls='ls -h --color -F --time-style long-iso'
@@ -41,7 +146,7 @@
 	[ -x $(which pygmentize) ] && alias dog='pygmentize -O style=native -f console256 -g'
 
 # turn on compression and forward X by default
-	alias ssh='ssh -C'
+	alias ssh='ssh -C -Y'
 
 # we have a dual core processor, don't we? let's run concurrent make jobs...
 	alias make='make -j3'
@@ -61,18 +166,8 @@
 # history file - popular commands, for future aliases
 	alias histpop='cut -f1 -d" " .bash_history | sort | uniq -c | sort -nr | head -n 30'
 
-# datacrow is a personal library/database app.  datacrow.net
-	alias datacrow="java -Xmx256m -jar ~/apps/datacrow/datacrow.jar"
-
-# mutt doesn't like UTF-8 for some reason.
-# Disabling this - I think I've finally gotten mutt/vim/et. al. to all play nicely with UTF8
-#	alias mutt="LC_ALL=C LANG=C mutt"
-
 # subversion - add all unignored new files to the repo
 #        alias aa="for x in $(svn st | grep ^? | awk '{ print $NF }'); do svn add $x; done"
-
-# daily journal entry in txtfiles vimwiki
-	alias daily="vim ~/txtfiles/daily/$(date +%d-%b-%Y).wiki"
 
 # tmux detact/attach
 	alias tmda="tmux det; tmux att"
@@ -84,213 +179,13 @@
 	alias telnet='TERM=xterm telnet'
 #
 # Functions
-#
-# greps the running process list for the value of $1
-psgrep() {
-	local name=$1
-	ps -ef | grep "${name}" | sed '$d'
-	unset $name
-}
-
-# find the Property name for autoprops with pekwm
-propstring () {
-	echo -n 'Property '
-	xprop WM_CLASS | sed 's/.*"\(.*\)", "\(.*\)".*/= "\1,\2" {/g'
-	echo '}'
-}
-
-# calculator!  requires bc
-? () { echo "$*" | bc -l; }
-
-# random alphanumeric password
-randpass() {
-	local chars=$1
-	strings /dev/urandom | grep -o '[[:alnum:]]' | head -n $chars | tr -d '\n'; echo
-	unset chars
-}
-
-# googone - rm's files previously extracted from a tarball
-googone() {
-	local TARB="${1}"
-	tar -tf ${TARB} | xargs rm -r &>/dev/null
-}
-
-# frequency of words in a stream of text/file
-freq() {
-	 awk '{for (x=1;x<=NF;x++) print $x}' $1 | sed -e 's/,//g' -e 's/;//g' -e 's/"//g' -e 's/://g' -e s/\'//g | sort | uniq -c | sort -nr
-}
-
-function hr() {
-	PATTERN="${1:-─}";
-	for ((x=0; x<$COLUMNS; x++)); do
-		echo -n "${PATTERN}"
-	done
-}
-
-##### End of Aliases / Functions #####
-
-##### Environment Variables #####
-# safe tmpdir
-	export TMPDIR=/${HOME}/tmp/
-	export TMP=${TMPDIR}
-
-# inputrc
-	export INPUTRC=~/.inputrc
-
-# IRC defaults
-	export IRCNICK=$USER
-
-# it's 2010 - time to use UTF-8 locales.
-	export LANG="en_US.UTF-8"
-	export LC_CTYPE="en_US.UTF-8"
-
-# IMAP Server default (used by mutt)
-	export IMAPSERVER=example.com
-
-# set our LS_COLORS 
-	export LS_COLORS="di=38;5;27:ln=36;40:so=1;;40:pi=33;40:ex=32;40:bd=35;40:cd=1;;40:su=32;41:sg=33;46:tw=0;44:ow=33;44:"
-
-# set highlight color for GREP
-	export GREP_COLOR='1;30;43'
-
-# export History options, to ignore certain repetitive commands
-	export HISTIGNORE="&:[bf]g:exit:fortune:clear:cl:history:cat *:dict *:which *:rm *:rmdir *:shred *:man *:apropos *:sudo rm *:sudo cat *:mplayer *:source *:. *:gojo *:mutt"
-
-# keep only one copy of any given command in our history, ignoring duplicates and lines beginning with a space
-	export HISTCONTROL=erasedups:ignoreboth
-
-# give me timestamps in my history
-	#export HISTTIMEFORMAT='%F %T '
-
-# HISTSIZE is the number of history lines to keep in RAM - I'll take a million.
-	unset HISTFILESIZE
-	export HISTSIZE=1000000
-
-# fix PATH
-#	PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:$HOME/bin:.
-
-# Preferred text editor.  vim, of course.
-	export EDITOR='vim'
-
-
-##### End of Environment Variables #####
-
-##### Shell-Specific Options #####
-#correct spelling errors in cd pathnames
-shopt -s cdspell
-#multi-line commands appended to history as single-line, for ease of editing
-shopt -s cmdhist
-#extended file-globbing
-shopt -s extglob
-#appends history entries rather than overwriting them.
-shopt -s histappend
-# includes dotfiles in tab-completion
-shopt -s dotglob
-# always update windowsize after each command
-shopt -s checkwinsize
-# if a bare directory is typed as a command, cd to it instead
-shopt -s autocd
-# ls -F style markers for tab-completed items
-set visible-stats on
-##### End of Shell-Specific Options #####
-
-
-# no core files
-ulimit -S -c 0
-
-# Uncomment this to create hostname-based customizations, sourced based on hostname.
-#[ -f ${HOME}/.bash_profile.$(hostname -s) ] && source ${HOME}/.bash_profile.$(hostname -s)
-
-# simple test of $HOME - if $HOME contains /Users then this is an osx machine, fix Linuxisms above.
-[[ "${HOME}" == "/Users/"* ]] && ( [ -f "${HOME}/.bash_profile.osx" ] && source ${HOME}/.bash_profile.osx)
-
-##### Drawing our prompt #####
-
-# the value of PROMPT_COMMAND gets executed by bash prior to displaying the prompt.  Unset this now, because we're going to use it later.
-unset PROMPT_COMMAND
-
-##### Color Definitions (commands to set text colors) #####
-ResetColours="$(tput sgr0)"
-
-Black="$(tput setaf 0)"
-DarkGrey="$(tput bold ; tput setaf 0)"
-BlackBG="$(tput setab 0)"
-
-Red="$(tput setaf 1)"
-LightRed="$(tput bold ; tput setaf 1)"
-RedBG="$(tput setab 1)"
-
-Green="$(tput setaf 2)"
-LightGreen="$(tput bold ; tput setaf 2)"
-GreenBG="$(tput setab 2)"
-
-Yellow="$(tput setaf 3)"
-BrightYellow="$(tput bold ; tput setaf 3)"
-YellowBG="$(tput setab 3)"
-
-Blue="$(tput setaf 4)"
-BrightBlue="$(tput bold ; tput setaf 4)"
-BlueBG="$(tput setab 4)"
-
-Purple="$(tput setaf 5)"
-PurpleBG="$(tput setab 5)"
-Pink="$(tput bold ; tput setaf 5)"
-
-Cyan="$(tput setaf 6)"
-BrightCyan="$(tput bold ; tput setaf 6)"
-CyanBG="$(tput setab 6)"
-
-LightGrey="$(tput setaf 7)"
-White="$(tput bold ; tput setaf 7)"
-LightGreyBG="$(tput setab 7)"
-
-##### End of Color Definitions #####
-
-##### User defined Variables. #####
-# Set User Chosen Colours Here:
-
-# brackets, parentheses, separators
-UC1="${DarkGrey}"
-
-# color of current working directory
-UC2="${Blue}"
-
-# prompt timestamp color
-UC3="${LightGrey}"
-
-# hostname color
-UC4="${Purple}"
-
-# display username in this colour
-UNC="${Green}"
-
-# display prompt in this color
-PromptColor="${DarkGrey}"
-
-# Warning colour for low load
-WC1="${Green}"
-
-# Medium Load
-WC2="${Yellow}"
-
-# High Load
-WC3="${Red}"
-##### End User Settings #####
-
-##### Priviliged User Prompt #####
-# This changes the username color for "other" users
-case $USER in
-	root)
-		UNC="${Red}"
-		PromptColor="${Red}"
-		;;
-esac
-##### End of Root Prompt
-
-##### Set some Useful Variables #####
-##### End of Useful Vars #####
-
 ##### Begin Function Definitons #####
+
+# show only nonempty, noncommented lines from a file
+	trim() {
+		local file="${1}"
+		egrep -v "^#" "${file}" | grep -v ^$
+	}
 
 # Calculates and sets up Load
 function load_info {
@@ -327,46 +222,201 @@ function load_info {
 
 function lastexit() {  # outputs the color-coded value of $?
 	EXIT=$?
-	echo -e -n "${DarkGrey}$(hr)[Exit "
-	if [ "$EXIT" -gt "0" ]; then
-		echo -n "${Red}${EXIT}${ResetColours}"
-	else
+	echo -e -n "${UC1}$(hr)┌[Exit "
+	if [ "$EXIT" -eq "0" ]; then
 		echo -n "${Green}${EXIT}${ResetColours}"
+	else
+		echo -n "${Red}${EXIT}${ResetColours}"
 	fi
 }
 
-# function hg_prompt_info {
-# if [ -d "${PWD}/.hg" ] || [[ "${PWD}" == *"${HOME}"* ]]; then
-# 	echo -n "${UC1}­["
-# 	hg prompt "${DarkGrey}☿ ${ResetColours}${Green}{rev}${Pink}{status|modified}${ResetColours}${Cyan}{status|unknown}${ResetColours}${Yellow}{update}${ResetColours}" 2>/dev/null
-# 	echo -n "${UC1}]${ResetColours}"
-# elif [ -d ${HOME}/.hg -a "${PWD/$HOME}" = "$PWD" ]; then
-# 	hg prompt "${DarkGrey}☿ ${ResetColours}${Green}{rev}${Pink}{status|modified}${ResetColours}${Cyan}{status|unknown}${ResetColours}${Yellow}{update}${ResetColours}" 2>/dev/null
-# 	echo -n "${UC1}]${ResetColours}"
-# fi
-# }
+# calling hg root is too slow
+#function find_hg_root() {
+#	CWD="${PWD}"
+#    while [ "${PWD}" != "/" ];
+#	do
+#      [ -f ${PWD}/.hg/dirstate ] && export HG_ROOT="${PWD}/.hg" && cd "${CWD}" && return 0
+#	cd ..
+#	done
+#	cd "${CWD}"
+#	return 1
+#}
+
+function repo_prompt_info {
+	if git status -s &>/dev/null; then
+		echo -n "${UC1}­[${DARKGREY} ${ResetColours}"
+		BRANCH="$(git branch | grep ^\* | awk '{ print $NF }')"
+		if $(git status | grep -q "modified:"); then
+			echo -n "${Red}${BRANCH}${ResetColours}"
+		else
+			echo -n "${Green}${BRANCH}${ResetColours}"
+		fi
+		echo -n "${UC1}]${ResetColours}"
+	# elif find_hg_root; then
+	# 	hg_branch=$(cat "$HG_ROOT/branch" 2>/dev/null || hg branch)
+	# 	echo -n "${UC1}­["${DarkGrey}☿ ${ResetColours}${Blue}"$hg_branch${ResetColours}${DarkGrey}:${ResetColours}"
+	# 	hg prompt "${Green}{rev}${Pink}{status|modified}${ResetColours}${Cyan}{status|unknown}${ResetColours}${Yellow}{update}${ResetColours}" 2>/dev/null
+	# 	echo -n "${UC1}]${ResetColours}"
+	fi
+}
+
+# calculator!  requires bc
+? () { echo "$*" | bc -l; }
+
+# random alphanumeric password
+randpass() {
+	local chars=$1
+	strings /dev/urandom | grep -o '[[:alnum:]]' | head -n $chars | tr -d '\n'; echo
+	unset chars
+}
+
+# googone - rm's files previously extracted from a tarball
+googone() {
+	local TARB="${1}"
+	tar -tf ${TARB} | xargs rm -r &>/dev/null
+}
+
+# frequency of words in a stream of text/file
+freq() {
+	 awk '{for (x=1;x<=NF;x++) print $x}' $1 | sed -e 's/,//g' -e 's/;//g' -e 's/"//g' -e 's/://g' -e s/\'//g | sort | uniq -c | sort -nr
+}
+
+function hr() {
+	PATTERN="${1:-─}";
+	for ((x=0; x<$COLUMNS; x++)); do
+		echo -n "${PATTERN}"
+	done
+}
+# used in prompt to change tmux buffer titles to hostname -s
+title() {
+	printf "\033k$1\033\\"
+}
+##### End of Aliases / Functions #####
+
+##### keybindings for vi-mode #####
+set -o vi
+bind -m vi-command ".":insert-last-argument
+bind -m vi-insert "\C-l.":clear-screen
+bind -m vi-insert "\C-a.":beginning-of-line
+bind -m vi-insert "\C-e.":end-of-line
+bind -m vi-insert "\C-w.":backward-kill-word
+bind -m vi-insert "\C-u.":backward-kill-line
+bind -m vi-insert "\C-k.":kill-line
+##### end of keybindings for vi-mode #####
+
+##### Environment Variables #####
+# safe tmpdir
+#	export TMPDIR=/${HOME}/tmp/
+#	export TMP=${TMPDIR}
+
+# inputrc
+	export INPUTRC=~/.inputrc
+
+# IRC defaults
+	export IRCNICK=$USER
+
+# it's 20XX - time to use UTF-8 locales.
+	export LANG="en_US.UTF-8"
+	export LC_CTYPE="en_US.UTF-8"
+
+# LS_COLORS - handy table
+#   FG Color     BG  Color     Other FG Color     Other BG Colors
+#   30  Black    40  BlackBG   90   Dark Grey     100  Dark GreyBG
+#   31  Red      41  RedBG     91   Light Red     101  Light RedBG
+#   32  Green    42  GreenBG   92   Light Green   102  Light GreenBG
+#   33  Orange   43  OrangeBG  93   Yellow        103  YellowBG
+#   34  Blue     44  BlueBG    94   Light Blue    104  Light BlueBG
+#   35  Purple   45  PurpleBG  95   Light Purple  105  Light PurpleBG
+#   36  Cyan     46  CyanBG    96   Turquoise
+#   37  Grey     47  GreyBG    97   White
+#
+    export LS_COLORS="di=34;40:ln=36;40;4:so=35;40:pi=1;35;40:ex=1;32;40:bd=1;33;41:cd=1;33;40:su=37;41:sg=0;41:or=93;4:or=31;1:tw=32;44:ow=0;44:"
+#                  dir┘        │          │        │          │          │          │          │        │       │        │       │       │
+#                       symlink┘          │        │          │          │          │          │        │       │        │       │       │
+#                                   socket┘        │          │          │          │          │        │       │        │       │       │
+#                                   named pipe/FIFO┘          │          │          │          │        │       │        │       │       │
+#                                                   executable┘          │          │          │        │       │        │       │       │
+#                                                            block device┘          │          │        │       │        │       │       │
+#                                                                   character device┘          │        │       │        │       │       │
+#                                                                                   setuid file┘        │       │        │       │       │
+#                                                                                            setgid file┘       │        │       │       │
+#                                                                                                 broken symlink┘        │       │       │
+#                                                                                                  missing symlink target┘       │       │
+#                                                                                              dir other writeable, no sticky bit┘       │
+#                                                                                                      dir other writeable, no sticky bit┘
+
+# set highlight color for GREP
+	export GREP_COLOR='1;30;43'
+
+# export History options, to ignore certain repetitive commands
+export HISTIGNORE="&:[bf]g:exit:fortune:clear:cl:history:cat *:dict *:which *:rm *:rmdir *:shred *:man *:apropos *:sudo rm *:sudo cat *:mplayer *:source *:. *:gojo *:mutt:*AWS*:file *"
+
+# keep only one copy of any given command in our history, ignoring duplicates and lines beginning with a space
+	export HISTCONTROL=erasedups:ignoreboth
+
+# give me timestamps in my history
+	#export HISTTIMEFORMAT='%F %T '
+
+# HISTSIZE is the number of history lines to keep in RAM - I'll take a million.
+	unset HISTFILESIZE
+	export HISTSIZE=1000000
+
+# fix PATH
+	PATH=/usr/local/java/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:$HOME/bin:/opt/aws/bin
+
+# Default windowmanager for startx command
+	export WINDOWMANAGER='/usr/bin/xmonad'
+
+# Use vi as our normal file PAGER.
+	export PAGER="vimpager"
+
+# use vim (invoked as view) as our Man file Pager - see alias section above
+	export MANPAGER="${HOME}/bin/vimpager"
+
+# Preferred text editor.  vim, of course.  Emacs is for heathens.
+	export EDITOR='vim'
+
+# env for VIM templates
+	export VIMTEMPLATES='${HOME}/.vim/templates/'
+
+	# mail notification (disable)
+#	export MAIL=${HOME}/mail/inbox
+	unset MAILCHECK
 
 
-##### End Function Definitons #####
+##### End of Environment Variables #####
 
+##### Other environment settings #####
+# no core files
+ulimit -S -c 0
 
-##### Export Prompt #####
-export PROMPT_COMMAND="lastexit; echo -n '${UC1}]${ResetColours}'"
-
-# uncomment this and the hg_prompt_info function above to get mercurial info in your prompt
-#PS1="\[${UC1}\]­[\[${UNC}\]\u\[${UC1}\]@\[${UC4}\]\h\[${UC1}\]:\[${UC2}\]\w\[${UC1}\]]\$(hg_prompt_info)\[${UC1}\]­[\$(load_info)\[${UC1}\]]-\[${UC1}\][\[${UC3}\]\$(date +%R)\[\[${ResetColours}\]${UC1}\]]\[${ResetColours}\]\n\[${PromptColor}\]⚛\[${ResetColours}\] "
-
-# prompt does not include mercurial info
-PS1="\[${UC1}\]­[\[${UNC}\]\u\[${UC1}\]@\[${UC4}\]\h\[${UC1}\]:\[${UC2}\]\w\[${UC1}\]]\[${UC1}\]­[\$(load_info)\[${UC1}\]]-\[${UC1}\][\[${UC3}\]\$(date +%R)\[\[${ResetColours}\]${UC1}\]]\[${ResetColours}\]\n\[${PromptColor}\]⚛\[${ResetColours}\] "
-
-PS2="\[${UC1}\]--\[${ResetColours}\]"
-##### End of Export Prompt #####
+# mkdir for .viminfo outside of NFS to try and avoid unwriteable error
+mkdir -p /var/tmp/${USER} >&/dev/null
 
 ##### START bash completion -- do not remove this line #####
 [ -f /etc/bash_completion ] && source /etc/bash_completion
 ##### END bash completion -- do not remove this line #####
 
+##### Export Prompt #####
 
-##########################
-# End of .bash_profile	 #
-##########################
+# Priviliged User Prompt
+# This changes the username color for "other" users
+case $USER in
+	root)
+		UNC="${Red}"
+		PromptColor="${Red}"
+		;;
+esac
+##### End of Root Prompt #####
+
+export PROMPT_COMMAND="lastexit; title $(hostname -s); echo -n '${UC1}]${ResetColours}'"
+
+PS1="\[${UC1}\]­[\[${ResetColours}\]\[${UNC}\]\u\[${ResetColours}\]\[${UC1}\]@\[${ResetColours}\]\[${UC4}\]\h\[${ResetColours}\]\[${UC1}\]:\[${ResetColours}\]\[${UC2}\]\w\[${ResetColours}\]\[${UC1}\]]\[${ResetColours}\]\$(repo_prompt_info)\[${UC1}\]­[\[${ResetColours}\]\$(load_info)\[${UC1}\]]-\[${UC1}\][\[${ResetColours}\]\[${UC3}\]\$(TZ="Pacific/Honolulu" date +%R)\[\[${ResetColours}\]${UC1}\]]\[${ResetColours}\]\n\[${PromptColor}\]└⚛\[${ResetColours}\] "
+
+PS2="\[${UC1}\]--\[${ResetColours}\]"
+##### End of Export Prompt #####
+
+# source any local customizations, based on hostname. ensure we always exit 0
+[ -f ${HOME}/.bash_profile.$(hostname -s) ] && source ${HOME}/.bash_profile.$(hostname -s) || (echo > /dev/null)
+
+##### End of .bash_profile	 #####

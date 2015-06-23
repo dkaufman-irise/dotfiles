@@ -8,6 +8,7 @@
 	set modelines=1                             " either the first or last line is the modeline
 	set t_Co=256                                " set 256 color mode always - it's 2014 already
 	set ttyfast                                 " ttyfast indicates a fast terminal connection. force this.
+	set background=dark                         " I'm always going to have a dark background
 	set backspace=indent,eol,start              " Allow backspacing over everything in insert mode
 	set tabstop=4                               " This is the tab key value.
 	set noexpandtab                             " ASCII-9 chars when hitting tab
@@ -24,11 +25,11 @@
 	set ignorecase                              " Turn off ignorecase in a typed search if an uppercase char exists.
 	set smartcase
 	set nobackup                                " I hate *~ files.
+	set noswapfile                              " adding to see if it helps with NFS problems
 	set history=1000                            " Ex command history length
 	set shm+=I                                  " No start up message
 	set wrap                                    " let's display nicely, shall we?
-	" more natural split locations
-	set splitbelow
+	set splitbelow                              " more natural split locations
 	set splitright
 	set timeout timeoutlen=1000 ttimeoutlen=100 " remove delay when hitting o,O,etc..
 	set backspace=2 whichwrap+=<,>,[,]          " backspace and cursor keys wrap to previous/next line
@@ -50,8 +51,8 @@
 	"
 	color gentooish                             " Color scheme
 
-	" automatically wrap text to textwidth (t), automatically insert comment leader when inserting new lines (ro), autowrap comments to text width (c)
-	set formatoptions+=troc
+	" automatically wrap text to textwidth (t), automatically insert comment leader when inserting new lines (ro), autowrap comments to text width (c), better indentation of lists (n)
+	set formatoptions+=trocn
 	set isfname+=\	" IFS
 
 	" DICTIONARY STUFF.
@@ -115,7 +116,7 @@
 	" 6 -> solid vertical bar
 	" solid underscore seems to work in xterm more frequently than blinking
 	" vertical bar
-	let &t_SI .= "\<Esc>[4 q"
+	let &t_SI .= "\<Esc>[3 q"
 	let &t_EI .= "\<Esc>[0 q"
 "--------------------------------------------------------------------------------
 " }}}
@@ -149,13 +150,13 @@
 	vnoremap <S-Del> "+x
 
 	" CTRL-C and CTRL-Insert are Copy
-	vnoremap <C-C> "+y
+"	vnoremap <C-C> "+y
 	vnoremap <C-Insert> "+y
 
 	" CTRL-V and SHIFT-Insert are Paste
-	map <C-V>	 "+gP
+"	map <C-V>	 "+gP
 	map <S-Insert>	"+gP
-	cmap <C-V>	<C-R>+
+"	cmap <C-V>	<C-R>+
 	cmap <S-Insert>	 <C-R>+
 
 	" Pasting blockwise and linewise selections is not possible in Insert and
@@ -180,7 +181,7 @@
 	vmap <S-Insert>		 <C-V>
 
 	" Use CTRL-B to do what CTRL-V used to do (block select)
-	noremap <C-B>	 <C-V>
+"	noremap <C-B>	 <C-V>
 
 
 	" forget to sudo? :w!!
@@ -201,12 +202,16 @@
 	" make left and right arrow keys do indentation in normal mode
 	noremap <left> <<
 	noremap <right> >>
+
+	" center search results!
+	nmap n nzz
+	nmap N Nzz
 "--------------------------------------------------------------------------------
 " mappings for whitespace correction
 
-	" remove trailing whitespace
-	nnoremap <silent> ys :%s/\s\+$//<CR>
-	nnoremap <silent> YS :%s/^\s\+//<CR>
+	" remove trailing/leading whitespace
+	nnoremap <silent> Ds :%s/\s\+$//<CR>
+	nnoremap <silent> DS :%s/^\s\+//<CR>
 
 	" remove whitespace which occurs prior to a tab character \t
 	:nnoremap <silent> yt :%s/ \+\ze\t//g<CR>
@@ -215,8 +220,10 @@
 	:nnoremap <silent> yx :%s/\s\+x$//<CR>
 "--------------------------------------------------------------------------------
 " Leader mappings
-" can't map leader to space, since that breaks pasting any text that contains
-" spaces and then the pastetoggle character.
+" can't map leader to space, since that breaks pasting any text that contains spaces and then the pastetoggle character.
+
+" change the mapleader from \ to ,
+	let mapleader=","
 "
 " pasting with listchars on gets tedious.  let's fix that.
 	nnoremap <silent> <Leader>lc :%s/>\.\+/	/g<CR>:%s/\s\+$//<CR>
@@ -240,19 +247,24 @@
 " Tabularize mappings
 	nmap <Leader>a= :Tabularize /=<CR>
 	vmap <Leader>a= :Tabularize /=<CR>
+	nmap <Leader>a" :Tabularize /"<CR>
+	vmap <Leader>a" :Tabularize /"<CR>
 	nmap <Leader>a: :Tabularize /:\zs<CR>
 	vmap <Leader>a: :Tabularize /:\zs<CR>
 	nmap <Leader>a, :Tabularize /,\zs<CR>
 	vmap <Leader>a- :Tabularize /-\zs<CR>
 	nmap <Leader>a- :Tabularize /-\zs<CR>
 	vmap <Leader>a, :Tabularize /,\zs<CR>
+
+" toggle listchars
+	nnoremap <Leader>l :set list!<CR><C-L>
 "--------------------------------------------------------------------------------
 " }}}
 "
-" Bundles/Explicit sourcings {{{
+" Plugin/Explicit sourcings {{{
 "--------------------------------------------------------------------------------
 	runtime macros/matchit.vim        " better % matching
-	:source $HOME/.vim/plugin/rcs.vim " RCS plugin
+"	:source $HOME/.vim/plugin/rcs.vim " RCS plugin
 
 " source any hostname-specific items
 function! LoadFileNoError(filename)
@@ -268,62 +280,51 @@ exec LoadFileNoError( "~/.vimrc." . HOST )
 " vundle - auto install/update of plugins from github
 	set rtp+=~/.vim/bundle/vundle/
 	call vundle#rc()
-	Bundle "gmarik/vundle"
+	Plugin 'gmarik/vundle'
 "--------------------------------------------------------------------------------
-" Bundles
-" note: putting comments on the same lines as the "Bundle" commands breaks them!
-	" better highlighting for nested {[()]}
-	Bundle "kien/rainbow_parentheses.vim"
-	" easily text alignment
-	Bundle "godlygeek/tabular"
-	" restore vim's ability to autosave when running inside tmux
-	Bundle "vim-scripts/Vitality"
-	" Read/Write tweets from within vim
-	Bundle "vim-scripts/TwitVim"
-	" tab completion
-	Bundle "Shougo/neocomplcache.vim"
-	" Easy increment/decrement of dates/times
-	Bundle "tpope/vim-speeddating"
-	" Color scheme
-	" Bundle "stantona/vim-tomorrow-night-theme"
-	" Display all 256 xterm colors with RGB codes
-	" Bundle "guns/xterm-color-table.vim"
-	" Easier abbreviations
-	Bundle "tpope/vim-abolish"
-	" show the list of buffers in the command bar
-	Bundle "bling/vim-bufferline"
-	" display line changes to files that are in revision control
-	Bundle "mhinz/vim-signify"
-	" color scheme
-	" Bundle "vim-scripts/Xoria256m"
-	" improved status line for vim
-	Bundle "bling/vim-airline"
-	" syntax highlighting for todo.txt
-	Bundle "mivok/vimtodo"
-	" comment things out easily
-	Bundle "tpope/vim-commentary.git"
-	" syntax highlighting for kickstart files
-	Bundle "tangledhelix/vim-kickstart"
-	" conkyrc syntax files
-	Bundle "smancill/conky-syntax.vim"
-	" puppet things
-	Bundle "rodjek/vim-puppet"
-	" tmux syntax
-	Bundle "tejr/vim-tmux"
-	" vimwiki
-"	Bundle "vimwiki/vimwiki"
-	" transparent editing of gpg-encrypted files
-	Bundle "jamessan/vim-gnupg"
-	" lucius color scheme
-	Bundle "jonathanfilip/vim-lucius"
-	" jellybeans color scheme
-	Bundle "nanotech/jellybeans.vim"
-	" gentooish
-	Bundle "briancarper/gentooish.vim"
-	" vim-indent-guides
-	Bundle "nathanaelkane/vim-indent-guides"
-	" vim-taskwarrior
-	Bundle "farseer90718/vim-taskwarrior"
+"                               Plugins
+"--------------------------------------------------------------------------------
+" Look/Feel Plugins
+	Plugin 'bling/vim-airline'                    " improved status line for vim
+	Plugin 'bling/vim-bufferline'                 " show the list of buffers in the command bar
+	Plugin 'nathanaelkane/vim-indent-guides'      " vim-indent-guides
+"--------------------------------------------------------------------------------
+"Color Schemes
+	Plugin 'jonathanfilip/vim-lucius'             " lucius color scheme
+	Plugin 'nanotech/jellybeans.vim'              " jellybeans color scheme
+	Plugin 'briancarper/gentooish.vim'            " gentooish
+"--------------------------------------------------------------------------------
+" Feature enhancements / Addons
+	Plugin 'godlygeek/tabular'                    " easily text alignment
+	Plugin 'jamessan/vim-gnupg'                   " editing gpg-encrypted files
+	Plugin 'luochen1990/rainbow'                  " better highlighting for nested {[()]}
+	Plugin 'reedes/vim-litecorrect'               " vim-litecorrect - autocorrect
+	Plugin 'Shougo/neocomplcache.vim'             " tab completion
+	Plugin 'tpope/vim-abolish'                    " Easier abbreviations
+	Plugin 'tpope/vim-commentary.git'             " comment things out easily
+	Plugin 'tpope/vim-speeddating'                " Easy increment/decrement of dates/times
+	Plugin 'tpope/vim-surround'                   " Easily surround text objects with '{[( etc
+	Plugin 'tpope/vim-repeat'                     " Easily repeat with . plugin-based actions
+	Plugin 'vim-scripts/Vitality'                 " fix vim autosave when inside tmux
+	Plugin 'vimwiki/vimwiki'                      " vimwiki
+"--------------------------------------------------------------------------------
+" Syntax file additions
+	Plugin 'tejr/vim-tmux'                        " tmux syntax
+	Plugin 'chase/vim-ansible-yaml'               " ansible syntax
+"--------------------------------------------------------------------------------
+" Revision control enhancements
+	Plugin 'ludovicchabant/vim-lawrencium'        " vim mercurial integration
+	Plugin 'mhinz/vim-signify'                    " marks changed lines of revision controlled files
+	Plugin 'tpope/vim-fugitive'                   " vim git integration
+"--------------------------------------------------------------------------------
+"                       Disabled Plugin
+"	Plugin 'smancill/conky-syntax.vim'            " conkyrc syntax files
+"	Plugin 'rodjek/vim-puppet'                    " puppet things
+"	Plugin 'farseer90718/vim-taskwarrior'         " vim-taskwarrior
+"	Plugin 'tangledhelix/vim-kickstart'           " syntax highlighting for kickstart files
+"	Plugin 'vim-scripts/Xoria256m'                " color scheme
+"	Plugin 'stantona/vim-tomorrow-night-theme'    " Color scheme
+"	Plugin 'mivok/vimtodo'                        " syntax highlighting for todo.txt
 "--------------------------------------------------------------------------------
 " }}}
 "
@@ -353,23 +354,22 @@ command! -range=% WordFrequency <line1>,<line2>call WordFrequency()
 "--------------------------------------------------------------------------------
 if has("autocmd")
 	filetype plugin indent on                       " load indent files, to automatically do language-dependent indenting.
-	autocmd BufNewFile,BufRead *.md set ft=markdown " fix problem detecting markdown files
-	autocmd FileType xml,html,c,cs,java,perl,shell,bash,cpp,python,vim,php,blog,make set number	" Line Numbers
 
-" Use perl compiler for all *.pl and *.pm files.
-	autocmd BufNewFile,BufRead *.pl compiler perl
-	autocmd BufNewFile,BufRead *.pm compiler perl
+	augroup markdown
+		autocmd!
+		autocmd BufNewFile,BufRead *.md set ft=markdown " fix problem detecting markdown files
+	augroup END
 
-" Mapping for PerlDoc plugin
-	autocmd BufNewFile,BufRead *.pl source $HOME/.vim/ftplugin/perl_doc.vim
-	autocmd BufNewFile,BufRead *.pl map <F3> :Perldoc<CR>
-	autocmd BufNewFile,BufRead *.pl setf perl
-	autocmd BufNewFile,BufRead *.pl let g:perldoc_program='/usr/bin/perldoc'
+	augroup linenumbers
+		autocmd!
+		autocmd FileType xml,html,c,cs,java,perl,shell,bash,cpp,python,vim,php,blog,make set number	" Line Numbers
+	augroup END
 
 " restore cursor to previous position when opening file
 	function! ResCur()
 		if line("'\"") <= line("$")
 			normal! g`"
+			normal! zz
 			return 1
 		endif
 	endfunction
@@ -425,23 +425,25 @@ endfunction
 " autocmd FileType mail call MailClean()
 "----------------------------------------------------------------------------
 " autoformat text and no autoformatting comment insertion when writing email.
-	autocmd BufNewFile,BufRead /tmp/mutt-* set filetype=mail
-	autocmd FileType mail set fo=tcrqa tw=68 autoindent expandtab encoding=utf-8
+	augroup email
+		autocmd!
+		autocmd BufNewFile,BufRead /tmp/mutt-* set filetype=mail
+		autocmd FileType mail set fo=tcrqaw tw=72 autoindent expandtab encoding=utf-8
+
+		" select crap to delete/summarize with [...] and hit D to do so
+		autocmd FileType mail vmap D dO> [...]<CR><BS><BS>
+
+		" removes nested quotes, empty quoted lines, and any section of two or more blank lines
+		autocmd FileType mail map \f :call MailClean()<CR>
+		autocmd FileType mail map \g :%g/^> >/d<CR>:%s/^>\s\+$/ /g<CR>:%s/\s\+$//e<CR>:%s/\n\{3,}/\r\r/e<CR>:g/^> \(On\\|At\)\(Mon,\\|Tue,\\|Wed,\\|Thu,\\|Fri,\\|Sat,\\|Sun,\).*$/d<CR>/>.*Original Message<CR>dGxo<BS>--<Esc>:r ~/.signature<CR>ggG?^><CR>:noh<CR>o<CR><CR><BS>
+
+		"	highlight all lines past a certain point  ***FIXME*** figure out a way to automatically set OverLength to textwidth
+		autocmd FileType mail highlight OverLength ctermbg=202 guibg=#2d2d2d guifg=#000 ctermfg=white
+		autocmd FileType mail match OverLength /\%>72v/
+	augroup END
 
 "	autocmd FileType mail set listchars=tab:>\.,trail:·,extends:»,precedes:«,nbsp:.,eol:¬
 "	autocmd Filetype mail set comments=nb:>
-
-" select crap to delete/summarize with [...] and hit D to do so
-	autocmd FileType mail vmap D dO> [...]<CR><BS><BS>
-
-" removes nested quotes, empty quoted lines, and any section of two or more blank lines
-"	autocmd FileType mail map \f :g/^>\=\s\=Sent from my/d<CR>:%s/On.*wrote:$/> >/<CR>:%g/^> \=>/d<CR>:%s/^>\s\+$/ /g<CR>:%s/\s\+$//e<CR>:%s/\n\{3,}/\r\r/e<CR>:g/^> \(On\\|At\)\(Mon,\\|Tue,\\|Wed,\\|Thu,\\|Fri,\\|Sat,\\|Sun,\).*$/d<CR>ggG?^><CR>:noh<CR>o<CR><CR><BS>
-	autocmd FileType mail map \f :call MailClean()<CR>
-	autocmd FileType mail map \g :%g/^> >/d<CR>:%s/^>\s\+$/ /g<CR>:%s/\s\+$//e<CR>:%s/\n\{3,}/\r\r/e<CR>:g/^> \(On\\|At\)\(Mon,\\|Tue,\\|Wed,\\|Thu,\\|Fri,\\|Sat,\\|Sun,\).*$/d<CR>/>.*Original Message<CR>dGxo<BS>--<Esc>:r ~/.signature<CR>ggG?^><CR>:noh<CR>o<CR><CR><BS>
-
-"	highlight all lines past a certain point  ***FIXME*** figure out a way to automatically set OverLength to textwidth
-	autocmd FileType mail highlight OverLength ctermbg=202 guibg=#2d2d2d guifg=#000 ctermfg=white
-	autocmd FileType mail match OverLength /\%>72v/
 "----------------------------------------------------------------------------
 
 "----------------------------------------------------------------------------
@@ -474,12 +476,12 @@ endif
 	" make search terms underlined in the gui, yellow background
 	hi	Search			guibg=#CCCC00	guifg=#000000	gui=none	ctermfg=232		ctermbg=190		cterm=bold
 	" set colorcolumn/cursorline/cursorcolumn highlighting
-	hi	ColorColumn		guibg=#2d2d2d	ctermbg=233
-	hi	CursorColumn	guibg=#2d2d2d	ctermbg=233
-	hi	CursorLine		guibg=#2d2d2d	ctermbg=233
+	hi	ColorColumn		guibg=#2d2d2d	ctermbg=234
+	hi	CursorColumn	guibg=#2d2d2d	ctermbg=234
+	hi	CursorLine		guibg=#2d2d2d	ctermbg=234
 	" folds
-	hi	Folded			guibg=#2d2d2d	guifg=#999	gui=none	ctermbg=233		ctermfg=244
-	hi	FoldColumn		guibg=#2d2d2d	guifg=#999	gui=none	ctermbg=233		ctermfg=244
+	hi	Folded			guibg=#2d2d2d	guifg=#999	gui=none	ctermbg=234		ctermfg=244
+	hi	FoldColumn		guibg=#2d2d2d	guifg=#999	gui=none	ctermbg=234		ctermfg=244
 
 "--------------------------------------------------------------------------------
 " }}}
@@ -496,29 +498,8 @@ endif
 	nmap d+ <Plug>SpeedDatingNowUTC
 	nmap d- <Plug>SpeedDatingNowLocal
 "--------------------------------------------------------------------------------
-" twitvim
-	let twitvim_enable_perl = 1
-	let twitvim_old_retweet=1
-	let twitvim_force_ssl=1
-	nnoremap <F8> :FriendsTwitter<cr>
-	nnoremap <S-F8> :UserTwitter<cr>
-	nnoremap <A-F8> :RepliesTwitter<cr>
-	nnoremap <C-F8> :DMTwitter<cr>
-"--------------------------------------------------------------------------------
-	" vimwiki
-	let g:vimwiki_list = [{'path': '~/vimwiki/' , 'index': 'index', 'ext': '.wiki' , 'path_html': '/path/to/www/vimwiki',
-          \ 'template_path': '~/vimwiki/templates/',
-          \ 'template_default': 'default',
-          \ 'template_ext': '.html'}]
-	" only apply wiki syntax to dirs in vimwiki-list
-	let g:vimwiki_global_ext = 0
-"	let g:vimwiki_customwiki2html=$HOME.'/.vim/autoload/vimwiki/customwiki2html.sh'
-"--------------------------------------------------------------------------------
 	" rainbow parentheses
-	au VimEnter * RainbowParenthesesToggle
-	au Syntax * RainbowParenthesesLoadRound
-	au Syntax * RainbowParenthesesLoadSquare
-	au Syntax * RainbowParenthesesLoadBraces
+	" let g:rainbow_active = 1
 "--------------------------------------------------------------------------------
 	" vim-bufferline settings
 	let g:bufferline_echo = 0
@@ -533,12 +514,21 @@ endif
 	let g:bufferline_modified = '+'
 	let g:bufferline_show_bufnr = 1
 "--------------------------------------------------------------------------------
-	" fix automatic syntax detection for todo.txt
-	au! BufRead,BufNewFile *.never.txt,todo.txt,*.done.txt,*.todo.txt,recur.txt,done.txt,done_*.txt,tasks.txt set filetype=todo
-"--------------------------------------------------------------------------------
 	" airline settings
+	" use powerline symbols
 	let g:airline_powerline_fonts = 1
-	let g:airline_theme='wombat'
+	" airline theme
+	let g:airline_theme='hybridline'
+	let g:airline_detect_modified=1
+	let g:airline_detect_paste=1
+	let g:airline_detect_iminsert=1
+	let g:airline#extensions#branch#enabled = 1
+	" change the text for when no branch is detected
+	let g:airline#extensions#branch#empty_message = ''
+	" truncate long branch names to a fixed length
+	let g:airline#extensions#branch#displayed_head_limit = 16
+	" enable/disable syntastic integration
+	let g:airline#extensions#syntastic#enabled = 1
 "--------------------------------------------------------------------------------
 	" when calling vimpager, disable X11
 	let vimpager_disable_x11 = 1
@@ -571,10 +561,29 @@ endif
 	"
 "--------------------------------------------------------------------------------
 "	vim-indent-guides
-let g:indent_guides_enable_on_vim_startup = 1
-let g:indent_guides_auto_colors = 0
-autocmd VimEnter,Colorscheme * :hi IndentGuidesOdd  guibg=black  ctermbg=232 ctermfg=237
-autocmd VimEnter,Colorscheme * :hi IndentGuidesEven guibg=darkgrey ctermbg=235 ctermfg=237
+	let g:indent_guides_enable_on_vim_startup = 1
+	let g:indent_guides_auto_colors = 0
+	augroup indent-guides
+		autocmd!
+		autocmd VimEnter,Colorscheme * :hi IndentGuidesOdd  guibg=black   ctermbg=232
+		autocmd VimEnter,Colorscheme * :hi IndentGuidesEven guibg=darkgrey ctermbg=235
+	augroup END
+"--------------------------------------------------------------------------------
+" litecorrect
+	augroup litecorrect
+		autocmd!
+		autocmd FileType markdown,mkd call litecorrect#init()
+		autocmd FileType textile call litecorrect#init()
+		autocmd FileType mail call litecorrect#init()
+	augroup END
+"--------------------------------------------------------------------------------
+" vim ansible
+	let g:ansible_options = {'ignore_blank_lines': 0}
+	augroup ansible
+		autocmd!
+		autocmd BufEnter *.yml :set ft=ansible
+	augroup END
+"--------------------------------------------------------------------------------
 " }}}
 "
 " Abbreviations {{{
@@ -583,11 +592,25 @@ autocmd VimEnter,Colorscheme * :hi IndentGuidesEven guibg=darkgrey ctermbg=235 c
 	ab DATE <C-R>=strftime("%a %b %d %T %Z %Y")<CR>
 	ab TD <C-R>=strftime("%Y-%m-%d")<CR>
 	ab br <br />
+" Fix common tyops {{{
+"--------------------------------------------------------------------------------
+if has("user_commands")
+    command! -bang -nargs=? -complete=file E e<bang> <args>
+    command! -bang -nargs=? -complete=file W w<bang> <args>
+    command! -bang -nargs=? -complete=file Wq wq<bang> <args>
+    command! -bang -nargs=? -complete=file WQ wq<bang> <args>
+    command! -bang Wa wa<bang>
+    command! -bang WA wa<bang>
+    command! -bang Q q<bang>
+    command! -bang QA qa<bang>
+    command! -bang Qa qa<bang>
+endif"
 "--------------------------------------------------------------------------------
 " }}}
 "
 " experimental stuff {{{
 "--------------------------------------------------------------------------------
+	cnoremap q1 q!
 
 " }}}
 "

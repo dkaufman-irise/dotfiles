@@ -1,3 +1,5 @@
+set editing-mode vi
+
 set show-all-if-ambiguous on
 set show-all-if-unmodified on
 set bell-style visible
@@ -16,6 +18,8 @@ set output-meta on
 
 # map control-y to delete the entire line
 "\C-y": kill-whole-line
+# delete word forward is not mapped by default
+"\C-f": shell-kill-word
 # Completed names which are symbolic links to
 # directories have a slash appended.
 set mark-symlinked-directories on
